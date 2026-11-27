@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-obviouslead",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "n8n nodes for Obviouslead: get your leads and start workflows when a prospect replies, books a meeting or views your page.",
 	"license": "MIT",
 	"homepage": "https://obviouslead.com/docs/api#n8n",

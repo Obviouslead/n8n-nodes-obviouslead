@@ -1,4 +1,34 @@
-import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
+import {
+	NodeConnectionTypes,
+	type DeclarativeRestApiSettings,
+	type IExecutePaginationFunctions,
+	type INodeExecutionData,
+	type INodeType,
+	type INodeTypeDescription,
+} from 'n8n-workflow';
+
+const PAGE_SIZE = 100;
+const MAX_PAGES = 10000;
+
+/** Fetches every page of /leads (page 1, 2, 3...) until a page comes back with fewer than 100 leads. */
+async function getAllLeads(
+	this: IExecutePaginationFunctions,
+	requestData: DeclarativeRestApiSettings.ResultOptions,
+): Promise<INodeExecutionData[]> {
+	const results: INodeExecutionData[] = [];
+	for (let page = 1; page <= MAX_PAGES; page++) {
+		const items = await this.makeRoutingRequest({
+			...requestData,
+			options: {
+				...requestData.options,
+				qs: { ...(requestData.options.qs ?? {}), limit: PAGE_SIZE, page },
+			},
+		});
+		results.push(...items);
+		if (items.length < PAGE_SIZE) break;
+	}
+	return results;
+}
 
 export class Obviouslead implements INodeType {
 	description: INodeTypeDescription = {
@@ -99,18 +129,7 @@ export class Obviouslead implements INodeType {
 						value: '100',
 					},
 					operations: {
-						pagination: {
-							type: 'generic',
-							properties: {
-								continue: '={{ $response.body.length === 100 }}',
-								request: {
-									qs: {
-										limit: 100,
-										page: '={{ ($request.qs?.page ?? 1) + 1 }}',
-									},
-								},
-							},
-						},
+						pagination: getAllLeads,
 					},
 				},
 			},

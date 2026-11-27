@@ -91,19 +91,29 @@ export class ObviousleadTrigger implements INodeType {
 			async create(this: IHookFunctions): Promise<boolean> {
 				const webhookUrl = this.getNodeWebhookUrl('default');
 				const event = this.getNodeParameter('event') as string;
-				const response = (await this.helpers.httpRequestWithAuthentication.call(
-					this,
-					'obviousleadApi',
-					{
-						method: 'POST',
-						url: `${API_BASE}/webhooks`,
-						body: { event, url: webhookUrl, source: 'n8n' },
-						json: true,
-					},
-				)) as IDataObject;
-				if (!response || !response.id) return false;
+				const response = (await this.helpers.httpRequestWithAuthentication.call(this, 'obviousleadApi', {
+					method: 'POST',
+					url: `${API_BASE}/webhooks`,
+					body: { event, url: webhookUrl, source: 'n8n' },
+					json: true,
+					ignoreHttpStatusErrors: true,
+					returnFullResponse: true,
+				})) as { statusCode: number; body: IDataObject };
+				if (response.statusCode >= 400) {
+					const apiMessage = typeof response.body?.error === 'string' ? response.body.error : '';
+					throw new NodeApiError(this.getNode(), (response.body ?? {}) as JsonObject, {
+						httpCode: String(response.statusCode),
+						message: `Obviouslead refused the webhook${apiMessage ? `: ${apiMessage}` : ''}`,
+						description:
+							response.statusCode === 400
+								? 'Obviouslead can only send events to an n8n instance that is reachable from the internet over https. On a self-hosted n8n, set the WEBHOOK_URL environment variable to its public https address.'
+								: undefined,
+					});
+				}
+				const subscription = response.body;
+				if (!subscription || !subscription.id) return false;
 				const webhookData = this.getWorkflowStaticData('node');
-				webhookData.webhookId = response.id as string;
+				webhookData.webhookId = subscription.id as string;
 				return true;
 			},
 
