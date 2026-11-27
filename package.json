@@ -1,0 +1,55 @@
+{
+	"name": "n8n-nodes-obviouslead",
+	"version": "0.1.0",
+	"description": "n8n nodes for Obviouslead: get your leads and start workflows when a prospect replies, books a meeting or views your page.",
+	"license": "MIT",
+	"homepage": "https://obviouslead.com/docs/api#n8n",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"obviouslead",
+		"prospecting",
+		"leads"
+	],
+	"author": {
+		"name": "Obviouslead",
+		"email": "dev@obviouslead.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Obviouslead/n8n-nodes-obviouslead.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/ObviousleadApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Obviouslead/Obviouslead.node.js",
+			"dist/nodes/ObviousleadTrigger/ObviousleadTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "^0.59.3",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"release-it": "^21.1.0",
+		"typescript": "5.9.2"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

@@ -1,0 +1,10 @@
+{
+	"node": "n8n-nodes-obviouslead.obviousleadTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Sales", "Marketing & Content"],
+	"resources": {
+		"credentialDocumentation": [{ "url": "https://obviouslead.com/docs/api#n8n" }],
+		"primaryDocumentation": [{ "url": "https://obviouslead.com/docs/api#n8n" }]
+	}
+}
